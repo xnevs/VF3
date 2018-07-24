@@ -47,6 +47,7 @@ class IsoNodeProbability : public NodeProbabilityStrategy<Node,Edge>{
 public:
   IsoNodeProbability(ARGraph<Node,Edge>* source):NodeProbabilityStrategy<Node,Edge>(source){}
   double getProbability(ARGraph<Node,Edge>* g, node_id id);
+  virtual ~IsoNodeProbability(){}
 };
 
 template<typename Node, typename Edge>
@@ -54,6 +55,7 @@ class SubIsoNodeProbability : public NodeProbabilityStrategy<Node,Edge>{
 public:
   SubIsoNodeProbability(ARGraph<Node,Edge>* source):NodeProbabilityStrategy<Node,Edge>(source){}
   double getProbability(ARGraph<Node,Edge>* g, node_id id);
+  virtual ~SubIsoNodeProbability(){}
 };
 
 template<typename Node, typename Edge>

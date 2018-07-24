@@ -541,7 +541,7 @@ ARGraph<Node, Edge>::ARGraph(ARGLoader<Node, Edge> *loader)
             max_deg_out = k;
         
         NodeVec nv_out;
-        EdgeAttrVector eav_out;
+        EdgeAttrVector eav_out(k);
         out.push_back(nv_out);
         out_attr.push_back(eav_out);
         

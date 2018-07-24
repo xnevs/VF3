@@ -65,17 +65,29 @@ class CompareNodeStar{
 public:
   bool operator()(snode_t* n1, snode_t* n2)
   {
-  if (n1->deg_m > n2->deg_m)
-    return true;
-  if (n1->deg_m == n2->deg_m &&
-    n1->probability < n2->probability)
-      return true;
-  if (n1->deg_m == n2->deg_m &&
-    n1->probability == n2->probability &&
-    n1->deg > n2->deg)
-    return true;
-  return false;
+	  if (n1->deg_m > n2->deg_m)
+		return true;
+
+	  if (n1->deg_m == n2->deg_m &&
+		n1->probability < n2->probability)
+		  return true;
+
+	  if (n1->deg_m == n2->deg_m &&
+		n1->probability == n2->probability &&
+		n1->deg > n2->deg)
+		return true;
+
+	  return false;
   }
+};
+
+class FindUnused
+{
+public:
+	bool operator()(snode_t* n)
+	{
+		return !n->used;
+	}
 };
 
 class CompareNodeStarProbability{
@@ -199,15 +211,14 @@ vector<node_id> VF3NodeSorter<Node,Edge,Probability >::SortNodes(ARGraph<Node,Ed
     nodes[i].deg = pattern->EdgeCount(i);
     nodes[i].deg_neigh = 0;
     nodes[i].probability = probability->getProbability(pattern,i);
-    nodes[i].used = false;
-    nodes[i].in_candidate = false;
+    nodes[i].used = false;			//The node has been sorted
+    nodes[i].in_candidate = false;	//The node has to be ignored as candidate
     nodes[i].vis_count = 0;
     nodes[i].neig_count = 0;
     nodes[i].unv_count = 0;
     node_star.push_back(&nodes[i]);
   }
   
-  //making the heap
   int n = 0;
   candidate_it = min_element(node_star.begin(),node_star.end(), CompareNodeStarProbability());
   node_id top = (*candidate_it)->id;
@@ -215,9 +226,18 @@ vector<node_id> VF3NodeSorter<Node,Edge,Probability >::SortNodes(ARGraph<Node,Ed
 
   //Getting the first node of the heap
   for (; n < nodeCount - 1; n++) {
-    candidate_it = min_element(candidates.begin(),candidates.end(), CompareNodeStar());
-    if(candidate_it != candidates.end())
-      AddNodeToSortedSet(pattern, (*candidate_it)->id, n, nodes, candidates, nodes_order);
+    candidate_it = min_element(candidates.begin(), candidates.end(), CompareNodeStar());
+
+	//Searching for remaining user
+	if ((*candidate_it)->used)
+	{
+		candidate_it = find_if(node_star.begin(), node_star.end(), FindUnused());
+		AddNodeToSortedSet(pattern, (*candidate_it)->id, n, nodes, candidates, nodes_order);
+	}
+	else if (candidate_it != candidates.end())
+	{
+		AddNodeToSortedSet(pattern, (*candidate_it)->id, n, nodes, candidates, nodes_order);
+	}
   }
   
   delete[] nodes;
@@ -232,7 +252,8 @@ void VF3NodeSorter<Node,Edge,Probability >::AddNodeToSortedSet(ARGraph<Node,Edge
 {
   node_id i, neigh;
   node_id in1_count, out1_count;
-  
+
+
   nodes_order.push_back(node);
   nodes[node].used = true;
   nodes[node].in_candidate = true;
