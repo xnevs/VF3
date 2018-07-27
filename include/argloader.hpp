@@ -28,9 +28,11 @@
 #include <cstddef>
 
 #include <iostream>
+#include <string>
 #include <strstream>
 #include <map>
 #include <ctype.h>
+#include <cstddef>
 #include "argedit.hpp"
 
 using namespace std;
@@ -291,6 +293,35 @@ class BinaryGraphLoader : public ARGEdit<int,Empty> {
     uint16_t x = static_cast<unsigned char>(in.get());
     x |= static_cast<uint16_t>(in.get()) << 8;
     return x;
+  }
+};
+
+template <typename Node>
+class GFUGraphLoader : public ARGEdit<Node,Empty> {
+ public:
+  GFUGraphLoader(istream & in) {
+    std::string name;
+    in >> name;
+    int cnt;
+    in >> cnt;
+    
+    for (int i=0; i<cnt; ++i) {
+      Node nattr;
+      in >> nattr;
+      this->InsertNode(nattr);
+    }
+    
+    std::size_t ecnt;
+    in >> ecnt;
+    for (std::size_t i=0; i<ecnt; ++i) {
+      node_id u;
+      node_id v;
+      in >> u >> v;
+      std::cout << "insert " << u << " " << v << std::endl;
+      Empty eattr;
+      this->InsertEdge(u, v, eattr);
+      this->InsertEdge(v, u, eattr);
+    }
   }
 };
 
