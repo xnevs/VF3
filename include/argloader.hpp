@@ -324,4 +324,28 @@ class GFUGraphLoader : public ARGEdit<Node,Empty> {
   }
 };
 
+class GALGraphLoader : public ARGEdit<int,Empty> {
+ public:
+  GALGraphLoader(istream & in) {
+    int cnt;
+    in >> cnt;
+    
+    for (int i=0; i<cnt; ++i) {
+      int nattr = 0;
+      this->InsertNode(nattr);
+    }
+    
+    for (node_id u=0; u<cnt; ++u) {
+      int ecnt;
+      in >> ecnt;
+      for (int j=0; j<ecnt; ++j) {
+        node_id v;
+        in >> v;
+        Empty eattr;
+        this->InsertEdge(u, v, eattr);
+      }
+    }
+  }
+};
+
 #endif
