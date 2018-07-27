@@ -317,7 +317,6 @@ class GFUGraphLoader : public ARGEdit<Node,Empty> {
       node_id u;
       node_id v;
       in >> u >> v;
-      std::cout << "insert " << u << " " << v << std::endl;
       Empty eattr;
       this->InsertEdge(u, v, eattr);
       this->InsertEdge(v, u, eattr);
